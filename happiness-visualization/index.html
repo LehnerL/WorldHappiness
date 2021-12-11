@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Coding Train: Data and APIs Project 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  </head>
+  <body>
+    <h1>Global Happiness 2021</h1>
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+    <script>
+      // Data from: https://www.kaggle.com/ajaypalsinghlo/world-happiness-report-2021
+
+      window.addEventListener('load', setup);
+
+      async function setup() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const globalRank = await getData();
+        const myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: globalRank.country,
+            datasets: [
+              {
+                label: 'Ranked by happiness score,' +
+                 ' which estimate the extent to which each of six factors:' + 
+                 ' freedom, economic production, social support, life expectancy, absence of corruption, and generosity (7.842=highest score).',
+                data: globalRank.rank,
+                fill: false,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {}
+        });
+      }
+
+      async function getData() {
+        // const response = await fetch('testdata.csv');
+        const response = await fetch('world-happiness-report-2021.csv');
+        const data = await response.text();
+        const country = [];
+        const rank = [];
+        const rows = data.split('\n').slice(1);
+        rows.forEach(row => {
+          const cols = row.split(',');
+          country.push(cols[0]);
+          rank.push(parseFloat(cols[2]));
+        });
+        return { country, rank };
+      }
+    </script>
+  </body>
+</html>
